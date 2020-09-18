@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { BaseModel } from 'src/shared/models';
 
 import { TodoStatus } from '../constants';
 
 @Schema({ timestamps: true })
-export class Todo extends Document {
+export class Todo extends BaseModel {
   @Prop({ type: String, required: true })
   title: string;
 
@@ -17,12 +17,6 @@ export class Todo extends Document {
     enum: [TodoStatus.TODO, TodoStatus.DOING, TodoStatus.DOING],
   })
   status: string;
-
-  @Prop({ type: Date })
-  createdAt?: Date;
-
-  @Prop({ type: Date })
-  updatedAt?: Date;
 }
 
 export const TodoSchema = SchemaFactory.createForClass(Todo);

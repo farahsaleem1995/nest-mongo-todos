@@ -4,16 +4,24 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import { TodoDto, CreateTodoDto, UpdateTodoDto } from '../dto';
-import { UpdateTodoResult, DeleteTodoResult } from '../models';
+import {
+  TodoDto,
+  CreateTodoDto,
+  UpdateTodoDto,
+  GetTodosFilterDto,
+} from '../dto';
 import { TodoRepository } from '../repositories';
+import { Todo } from '../models';
+import { TodoStatus } from '../constants';
+import { DeleteResult, UpdateResult } from '../../shared/interfaces';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class TodoService {
   constructor(private readonly todoRepository: TodoRepository) {}
 
-  async getAll(): Promise<TodoDto[]> {
-    const todos = await this.todoRepository.findAll();
+  async getAll(getTodosFilterDto?: GetTodosFilterDto): Promise<TodoDto[]> {
+    const todos = await this.todoRepository.findAll(getTodosFilterDto);
 
     return TodoDto.fromModelArray(todos);
   }
@@ -29,13 +37,16 @@ export class TodoService {
   }
 
   async create(createTododDto: CreateTodoDto): Promise<TodoDto> {
-    const createdTodo = await this.todoRepository.create(createTododDto);
+    const createdTodo = await this.todoRepository.create({
+      ...createTododDto,
+      status: TodoStatus.TODO,
+    });
 
     return TodoDto.fromModel(createdTodo);
   }
 
   async update(id: string, updateTododDto: UpdateTodoDto): Promise<TodoDto> {
-    const updateResult: UpdateTodoResult = await this.todoRepository.update(
+    const updateResult: UpdateResult<Todo> = await this.todoRepository.update(
       id,
       updateTododDto,
     );
@@ -52,7 +63,7 @@ export class TodoService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletdResult: DeleteTodoResult = await this.todoRepository.delete(id);
+    const deletdResult: DeleteResult = await this.todoRepository.delete(id);
 
     if (deletdResult.ok !== 1) {
       throw new InternalServerErrorException();

@@ -7,19 +7,30 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 
 import { TodoService } from '../services';
-import { TodoDto, CreateTodoDto, UpdateTodoDto } from '../dto';
+import {
+  TodoDto,
+  CreateTodoDto,
+  UpdateTodoDto,
+  GetTodosFilterDto,
+} from '../dto';
+import { GetTodoFilterPipe } from '../pipes/get-todo-filter.pipe';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get('')
   @HttpCode(200)
-  getTodos(): Promise<TodoDto[]> {
-    return this.todoService.getAll();
+  @UsePipes(ValidationPipe)
+  getTodos(
+    @Query(GetTodoFilterPipe) getTodosFilterDto: GetTodosFilterDto,
+  ): Promise<TodoDto[]> {
+    return this.todoService.getAll(getTodosFilterDto);
   }
 
   @Get(':id')

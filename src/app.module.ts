@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { TodoModule } from './todo/todo.module';
+import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -9,6 +10,7 @@ import { TodoModule } from './todo/todo.module';
       useFindAndModify: false,
     }),
     TodoModule,
+    SharedModule,
   ],
   controllers: [],
   providers: [],
