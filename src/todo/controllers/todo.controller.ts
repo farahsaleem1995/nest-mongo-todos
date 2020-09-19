@@ -17,20 +17,26 @@ import {
   TodoDto,
   CreateTodoDto,
   UpdateTodoDto,
-  GetTodosFilterDto,
+  GetTodosQueryDto,
 } from '../dto';
-import { GetTodoFilterPipe } from '../pipes/get-todo-filter.pipe';
+import { GetTodosQueryPipe } from '../pipes';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get('')
   @HttpCode(200)
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: { enableImplicitConversion: true },
+    }),
+  )
   getTodos(
-    @Query(GetTodoFilterPipe) getTodosFilterDto: GetTodosFilterDto,
+    @Query(GetTodosQueryPipe) getTodosQueryDto: GetTodosQueryDto,
   ): Promise<TodoDto[]> {
-    return this.todoService.getAll(getTodosFilterDto);
+    console.log(getTodosQueryDto.isDescending);
+    return this.todoService.getAll(getTodosQueryDto);
   }
 
   @Get(':id')

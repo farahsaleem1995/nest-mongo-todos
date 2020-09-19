@@ -5,8 +5,7 @@ import { TodoController } from './controllers';
 import { TodoService } from './services';
 import { TodoRepository } from './repositories';
 import { Todo, TodoSchema } from './models';
-import { TodoStatusValidationPipe } from './pipes/';
-import { GetTodoFilterPipe } from './pipes/get-todo-filter.pipe';
+import { GetTodosQueryPipe, TodoStatusValidationPipe } from './pipes/';
 
 @Module({
   imports: [
@@ -19,7 +18,7 @@ import { GetTodoFilterPipe } from './pipes/get-todo-filter.pipe';
     TodoService,
     TodoRepository,
     TodoStatusValidationPipe,
-    GetTodoFilterPipe,
+    GetTodosQueryPipe,
   ],
 })
 export class TodoModule {}

@@ -1,33 +1,33 @@
 import { CreateQuery, FilterQuery, Model, UpdateQuery } from 'mongoose';
 
 import { BaseModel } from '../models';
-import { DeleteResult, UpdateResult } from '../interfaces';
+import { BaseQuery, DeleteResult, UpdateResult } from '../interfaces';
 
 export class BaseRepository<M extends BaseModel> {
   constructor(private readonly model: Model<M>) {}
 
-  findAll(filterQuery?: FilterQuery<M>): Promise<M[]> {
-    // exclude undefined property
-    const filter: any = Object.entries(filterQuery).reduce(
-      (accumulator, currentValue) => {
-        const [key, value] = currentValue;
+  findAll(filterQuery?: FilterQuery<M>, queryObj?: BaseQuery): Promise<M[]> {
+    const filter: any = this.excludeUndefinedProps(filterQuery);
+    const limit: number = queryObj.pageSize;
+    const skip: number = queryObj.page ? queryObj.page : 1;
 
-        if (value !== undefined) {
-          accumulator[key] = value;
-        }
-
-        return accumulator;
-      },
-      {},
-    );
+    let sortString: string;
+    if (queryObj.sortBy) {
+      sortString = queryObj.sortBy.toString();
+      if (queryObj.isDescending === false) {
+        sortString = `-${sortString}`;
+      }
+    }
 
     return this.model
       .find(filter)
-      .sort({ _id: -1 })
+      .sort(sortString ? sortString : { _id: -1 })
+      .skip(skip)
+      .limit(limit)
       .exec();
   }
 
-  find(id: string): Promise<M> {
+  findById(id: string): Promise<M> {
     return this.model.findOne({ _id: id as any }).exec();
   }
 
@@ -61,5 +61,17 @@ export class BaseRepository<M extends BaseModel> {
     const result: DeleteResult = { n, ok, deletedCount };
 
     return result;
+  }
+
+  private excludeUndefinedProps(filterQuery: any): any {
+    return Object.entries(filterQuery).reduce((accumulator, currentValue) => {
+      const [key, value] = currentValue;
+
+      if (value !== undefined) {
+        accumulator[key] = value;
+      }
+
+      return accumulator;
+    }, {});
   }
 }

@@ -8,26 +8,35 @@ import {
   TodoDto,
   CreateTodoDto,
   UpdateTodoDto,
-  GetTodosFilterDto,
+  GetTodosQueryDto,
 } from '../dto';
 import { TodoRepository } from '../repositories';
 import { Todo } from '../models';
 import { TodoStatus } from '../constants';
-import { DeleteResult, UpdateResult } from '../../shared/interfaces';
-import { plainToClass } from 'class-transformer';
+import { BaseQuery, DeleteResult, UpdateResult } from '../../shared/interfaces';
 
 @Injectable()
 export class TodoService {
   constructor(private readonly todoRepository: TodoRepository) {}
 
-  async getAll(getTodosFilterDto?: GetTodosFilterDto): Promise<TodoDto[]> {
-    const todos = await this.todoRepository.findAll(getTodosFilterDto);
+  async getAll(getTodosQueryDto?: GetTodosQueryDto): Promise<TodoDto[]> {
+    const filter: { title: string; status: string } = {
+      title: getTodosQueryDto.title,
+      status: getTodosQueryDto.status,
+    };
+    const query: BaseQuery = {
+      sortBy: getTodosQueryDto.sortBy,
+      isDescending: getTodosQueryDto.isDescending,
+      page: getTodosQueryDto.page,
+      pageSize: getTodosQueryDto.pageSize,
+    };
+    const todos = await this.todoRepository.findAll(filter, query);
 
     return TodoDto.fromModelArray(todos);
   }
 
   async getById(id: string): Promise<TodoDto> {
-    const todo = await this.todoRepository.find(id);
+    const todo = await this.todoRepository.findById(id);
 
     if (!todo) {
       throw new NotFoundException();

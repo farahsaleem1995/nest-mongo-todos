@@ -7,16 +7,13 @@ import {
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { GetTodosFilterDto } from '../dto';
+import { GetTodosQueryDto } from '../dto';
 
 @Injectable()
-export class GetTodoFilterPipe
-  implements PipeTransform<GetTodosFilterDto, Promise<GetTodosFilterDto>> {
-  async transform(
-    value: GetTodosFilterDto,
-    metadata: ArgumentMetadata,
-  ): Promise<GetTodosFilterDto> {
-    value = plainToClass(GetTodosFilterDto, value);
+export class GetTodosQueryPipe
+  implements PipeTransform<GetTodosQueryDto, Promise<GetTodosQueryDto>> {
+  async transform(value: GetTodosQueryDto): Promise<GetTodosQueryDto> {
+    value = plainToClass(GetTodosQueryDto, value);
 
     const validationError = await validate(value, {
       whitelist: true,
