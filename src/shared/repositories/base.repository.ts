@@ -8,13 +8,14 @@ export class BaseRepository<M extends BaseModel> {
 
   findAll(filterQuery?: FilterQuery<M>, queryObj?: BaseQuery): Promise<M[]> {
     const filter: any = this.excludeUndefinedProps(filterQuery);
+
     const limit: number = queryObj.pageSize;
     const skip: number = queryObj.page ? queryObj.page : 1;
 
     let sortString: string;
     if (queryObj.sortBy) {
       sortString = queryObj.sortBy.toString();
-      if (queryObj.isDescending === false) {
+      if (queryObj.isDescending) {
         sortString = `-${sortString}`;
       }
     }

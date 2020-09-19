@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { Expose, Transform } from 'class-transformer';
 import {
   IsBoolean,
@@ -20,18 +21,27 @@ export class GetTodosQueryDto implements BaseQuery {
   @IsOptional()
   @IsBoolean()
   @Expose({ name: 'isDescending' })
+  @Transform((value: any) => {
+    if (value === 'true' || value === '1') {
+      return true;
+    } else {
+      return false;
+    }
+  })
   isDescending: boolean;
 
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
   @Expose({ name: 'page' })
+  @Transform((value: any) => parseInt(value))
   page: number;
 
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
   @Expose({ name: 'pageSize' })
+  @Transform((value: any) => parseInt(value))
   pageSize: number;
 
   @IsOptional()

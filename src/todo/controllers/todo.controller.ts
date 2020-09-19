@@ -26,16 +26,10 @@ export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get('')
   @HttpCode(200)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      transformOptions: { enableImplicitConversion: true },
-    }),
-  )
+  @UsePipes(new ValidationPipe())
   getTodos(
     @Query(GetTodosQueryPipe) getTodosQueryDto: GetTodosQueryDto,
   ): Promise<TodoDto[]> {
-    console.log(getTodosQueryDto.isDescending);
     return this.todoService.getAll(getTodosQueryDto);
   }
 
