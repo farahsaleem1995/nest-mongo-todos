@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { TodoModule } from './todo/todo.module';
 import { SharedModule } from './shared/shared.module';
+import { JsonSchemaModule } from './json-schema/json-schema.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { SharedModule } from './shared/shared.module';
     }),
     TodoModule,
     SharedModule,
+    JsonSchemaModule,
   ],
   controllers: [],
   providers: [],

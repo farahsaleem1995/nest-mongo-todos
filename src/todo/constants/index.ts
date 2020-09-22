@@ -1,3 +1,4 @@
 import { from } from 'rxjs';
 
-export * from './Todt-status.enum';
+export * from './Todo-status.enum';
+export * from './todo-type-property.enum';

@@ -12,4 +12,11 @@ export class CreateTodoDto {
   @MinLength(4)
   @MaxLength(128)
   description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  type: string;
+
+  @IsNotEmpty()
+  properties: any;
 }

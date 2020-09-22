@@ -1,24 +1,32 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { TodoController } from './controllers';
-import { TodoService } from './services';
-import { TodoRepository } from './repositories';
-import { Todo, TodoSchema } from './models';
-import { GetTodosQueryPipe, TodoStatusValidationPipe } from './pipes/';
+import { TodoController, TodoTypeController } from './controllers';
+import { TodoService, TodoTypeService } from './services';
+import { TodoRepository, TodoTypeRepository } from './repositories';
+import { Todo, TodoSchema, TodoType, TodoTypeSchema } from './models';
+import {
+  CreateTodoTypeValidationPipe,
+  GetTodosQueryValidationPipe,
+  TodoStatusValidationPipe,
+} from './pipes/';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Todo.name, schema: TodoSchema, collection: 'todos' },
+      { name: TodoType.name, schema: TodoTypeSchema, collection: 'todo-types' },
     ]),
   ],
-  controllers: [TodoController],
+  controllers: [TodoController, TodoTypeController],
   providers: [
     TodoService,
     TodoRepository,
+    TodoTypeRepository,
     TodoStatusValidationPipe,
-    GetTodosQueryPipe,
+    GetTodosQueryValidationPipe,
+    CreateTodoTypeValidationPipe,
+    TodoTypeService,
   ],
 })
 export class TodoModule {}

@@ -17,6 +17,12 @@ export class Todo extends BaseModel {
     enum: [TodoStatus.TODO, TodoStatus.DOING, TodoStatus.DOING],
   })
   status: string;
+
+  @Prop({ type: String, required: true })
+  type: string;
+
+  @Prop({ type: Object, required: true })
+  properties: any;
 }
 
 export const TodoSchema = SchemaFactory.createForClass(Todo);

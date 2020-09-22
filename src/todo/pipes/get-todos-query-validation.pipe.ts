@@ -10,7 +10,7 @@ import { validate } from 'class-validator';
 import { GetTodosQueryDto } from '../dto';
 
 @Injectable()
-export class GetTodosQueryPipe
+export class GetTodosQueryValidationPipe
   implements PipeTransform<GetTodosQueryDto, Promise<GetTodosQueryDto>> {
   async transform(value: GetTodosQueryDto): Promise<GetTodosQueryDto> {
     value = plainToClass(GetTodosQueryDto, value);

@@ -16,18 +16,35 @@ export class TodoDto {
   description: string;
 
   @Expose()
+  type: string;
+
+  @Expose()
+  properties: any;
+
+  @Expose()
   createdAt?: string;
 
   @Expose()
   updatedAt?: string;
 
   static fromModel(todo: Todo): TodoDto {
-    const { id, title, description, status, createdAt, updatedAt } = todo;
+    const {
+      id,
+      title,
+      status,
+      description,
+      type,
+      properties,
+      createdAt,
+      updatedAt,
+    } = todo;
     const todoDto: TodoDto = {
       id: id,
       title: title,
-      description: description,
       status: status,
+      description: description,
+      type: type,
+      properties: properties,
       createdAt: createdAt?.toISOString(),
       updatedAt: updatedAt?.toISOString(),
     };
@@ -37,12 +54,23 @@ export class TodoDto {
 
   static fromModelArray(todos: Todo[]): TodoDto[] {
     return todos.map((todo: Todo) => {
-      const { id, title, description, status, createdAt, updatedAt } = todo;
+      const {
+        id,
+        title,
+        status,
+        description,
+        type,
+        properties,
+        createdAt,
+        updatedAt,
+      } = todo;
       const todoDto: TodoDto = {
         id: id,
         title: title,
-        description: description,
         status: status,
+        description: description,
+        type: type,
+        properties: properties,
         createdAt: createdAt?.toISOString(),
         updatedAt: updatedAt?.toISOString(),
       };

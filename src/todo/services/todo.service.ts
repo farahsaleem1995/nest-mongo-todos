@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import * as Ajv from 'ajv';
 
 import {
   TodoDto,
@@ -10,14 +12,17 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { TodoRepository } from '../repositories';
-import { Todo } from '../models';
+import { TodoRepository, TodoTypeRepository } from '../repositories';
+import { Todo, TodoType } from '../models';
 import { TodoStatus } from '../constants';
 import { BaseQuery, DeleteResult, UpdateResult } from '../../shared/interfaces';
 
 @Injectable()
 export class TodoService {
-  constructor(private readonly todoRepository: TodoRepository) {}
+  constructor(
+    private readonly todoRepository: TodoRepository,
+    private readonly todoTypeRepository: TodoTypeRepository,
+  ) {}
 
   async getAll(getTodosQueryDto?: GetTodosQueryDto): Promise<TodoDto[]> {
     const filter: { title: string; status: string } = {
@@ -46,6 +51,20 @@ export class TodoService {
   }
 
   async create(createTododDto: CreateTodoDto): Promise<TodoDto> {
+    const { type, properties } = createTododDto;
+
+    const todoType = await this.todoTypeRepository.findByName(type);
+    if (!todoType) {
+      throw new NotFoundException(`Todo type "${name}" not found`);
+    }
+
+    const isValidType: boolean = await this.validateType(properties, todoType);
+    if (!isValidType) {
+      throw new BadRequestException(
+        `The provided properties is not valid for "${createTododDto.type}" type`,
+      );
+    }
+
     const createdTodo = await this.todoRepository.create({
       ...createTododDto,
       status: TodoStatus.TODO,
@@ -81,5 +100,13 @@ export class TodoService {
     if (deletdResult.deletedCount === 0) {
       throw new NotFoundException();
     }
+  }
+
+  private async validateType(obj: any, todoType: TodoType): Promise<boolean> {
+    const ajv = new Ajv();
+    const validate: Ajv.ValidateFunction = ajv.compile(todoType.typeModel);
+    const valid: boolean | PromiseLike<any> = validate(obj);
+
+    return !valid ? false : true;
   }
 }

@@ -19,16 +19,16 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { GetTodosQueryPipe } from '../pipes';
+import { GetTodosQueryValidationPipe } from '../pipes';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get('')
   @HttpCode(200)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(ValidationPipe)
   getTodos(
-    @Query(GetTodosQueryPipe) getTodosQueryDto: GetTodosQueryDto,
+    @Query(GetTodosQueryValidationPipe) getTodosQueryDto: GetTodosQueryDto,
   ): Promise<TodoDto[]> {
     return this.todoService.getAll(getTodosQueryDto);
   }
