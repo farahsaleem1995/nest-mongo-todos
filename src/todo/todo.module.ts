@@ -7,7 +7,6 @@ import { TodoRepository, TodoTypeRepository } from './repositories';
 import { Todo, TodoSchema, TodoType, TodoTypeSchema } from './models';
 import {
   CreateTodoTypeValidationPipe,
-  GetTodosQueryValidationPipe,
   TodoStatusValidationPipe,
 } from './pipes/';
 
@@ -24,7 +23,6 @@ import {
     TodoRepository,
     TodoTypeRepository,
     TodoStatusValidationPipe,
-    GetTodosQueryValidationPipe,
     CreateTodoTypeValidationPipe,
     TodoTypeService,
   ],

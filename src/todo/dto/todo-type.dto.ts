@@ -1,6 +1,8 @@
 import { TodoType } from '../models';
 
 export class TodoTypeDto {
+  id: string;
+
   name: string;
 
   properties: any;
@@ -8,14 +10,30 @@ export class TodoTypeDto {
   required: string[];
 
   static fromModel(todoType: TodoType): TodoTypeDto {
-    const { name, typeModel } = todoType;
+    const { id, name, typeModel } = todoType;
 
     const todoTypeDto: TodoTypeDto = {
+      id: id,
       name: name,
       properties: typeModel.properties,
       required: typeModel.required,
     };
 
     return todoTypeDto;
+  }
+
+  static fromModelArray(todoTypes: TodoType[]): TodoTypeDto[] {
+    return todoTypes.map((todoType: TodoType) => {
+      const { id, name, typeModel } = todoType;
+
+      const todoTypeDto: TodoTypeDto = {
+        id: id,
+        name: name,
+        properties: typeModel.properties,
+        required: typeModel.required,
+      };
+
+      return todoTypeDto;
+    });
   }
 }

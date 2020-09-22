@@ -1,8 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import * as Ajv from 'ajv';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { DeleteResult, UpdateResult } from 'src/shared/interfaces';
 
-import { CreateTodoTypeDto } from '../dto';
+import { CreateTodoTypeDto, GetTodoTypesQueryDto } from '../dto';
 import { TodoTypeDto } from '../dto/todo-type.dto';
+import { UpdateTodoTypeDto } from '../dto/update-todo-type.dto';
 import { CreateTodoTypeProperty, TodoTypeModel } from '../interfaces';
 import { TodoType } from '../models';
 import { TodoTypeRepository } from '../repositories';
@@ -10,6 +15,25 @@ import { TodoTypeRepository } from '../repositories';
 @Injectable()
 export class TodoTypeService {
   constructor(private readonly todoTypeRepository: TodoTypeRepository) {}
+  async getAll(
+    getTodoTypesQueryDto: GetTodoTypesQueryDto,
+  ): Promise<TodoTypeDto[]> {
+    const todoTypes: TodoType[] = await this.todoTypeRepository.findAll({
+      queryObj: getTodoTypesQueryDto,
+    });
+
+    return TodoTypeDto.fromModelArray(todoTypes);
+  }
+
+  async getById(id: string): Promise<TodoTypeDto> {
+    const todoType = await this.todoTypeRepository.findById(id);
+
+    if (!todoType) {
+      throw new NotFoundException();
+    }
+
+    return TodoTypeDto.fromModel(todoType);
+  }
 
   async create(createTodoTypeDto: CreateTodoTypeDto): Promise<TodoTypeDto> {
     const todoType: {
@@ -25,6 +49,38 @@ export class TodoTypeService {
     const createdTodoType = await this.todoTypeRepository.create(todoType);
 
     return TodoTypeDto.fromModel(createdTodoType);
+  }
+
+  async update(
+    id: string,
+    updateTododTypeDto: UpdateTodoTypeDto,
+  ): Promise<TodoTypeDto> {
+    const updateResult: UpdateResult<TodoType> = await this.todoTypeRepository.update(
+      id,
+      updateTododTypeDto,
+    );
+
+    if (updateResult.ok !== 1) {
+      throw new InternalServerErrorException();
+    }
+
+    if (!updateResult.lastErrorObject.updatedExisting) {
+      throw new NotFoundException();
+    }
+
+    return TodoTypeDto.fromModel(updateResult.value);
+  }
+
+  async delete(id: string): Promise<void> {
+    const deletdResult: DeleteResult = await this.todoTypeRepository.delete(id);
+
+    if (deletdResult.ok !== 1) {
+      throw new InternalServerErrorException();
+    }
+
+    if (deletdResult.deletedCount === 0) {
+      throw new NotFoundException();
+    }
   }
 
   private buildSchema(obj: {

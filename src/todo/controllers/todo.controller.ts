@@ -19,16 +19,24 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { GetTodosQueryValidationPipe } from '../pipes';
+import { WhitelistValidationPipe } from '../../shared/pipes';
 
 @Controller('todo')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
   @Get('')
   @HttpCode(200)
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      transformOptions: {
+        enableImplicitConversion: true,
+      },
+    }),
+  )
   getTodos(
-    @Query(GetTodosQueryValidationPipe) getTodosQueryDto: GetTodosQueryDto,
+    @Query(new WhitelistValidationPipe(GetTodosQueryDto))
+    getTodosQueryDto: GetTodosQueryDto,
   ): Promise<TodoDto[]> {
     return this.todoService.getAll(getTodosQueryDto);
   }

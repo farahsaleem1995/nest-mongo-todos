@@ -35,13 +35,16 @@ export class TodoService {
       page: getTodosQueryDto.page,
       pageSize: getTodosQueryDto.pageSize,
     };
-    const todos = await this.todoRepository.findAll(filter, query);
+    const todos = await this.todoRepository.findAllWithTypes({
+      filterQuery: filter,
+      queryObj: query,
+    });
 
     return TodoDto.fromModelArray(todos);
   }
 
   async getById(id: string): Promise<TodoDto> {
-    const todo = await this.todoRepository.findById(id);
+    const todo = await this.todoRepository.findByIdWithTypes(id);
 
     if (!todo) {
       throw new NotFoundException();
@@ -68,6 +71,7 @@ export class TodoService {
     const createdTodo = await this.todoRepository.create({
       ...createTododDto,
       status: TodoStatus.TODO,
+      type: todoType,
     });
 
     return TodoDto.fromModel(createdTodo);

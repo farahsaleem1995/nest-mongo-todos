@@ -19,29 +19,21 @@ export class GetTodosQueryDto implements BaseQuery {
   sortBy: string;
 
   @IsOptional()
-  @IsBoolean()
+  @IsString()
+  @IsIn(['1', '0'])
   @Expose({ name: 'isDescending' })
-  @Transform((value: any) => {
-    if (value === 'true' || value === '1') {
-      return true;
-    } else {
-      return false;
-    }
-  })
-  isDescending: boolean;
+  isDescending: string;
 
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
   @Expose({ name: 'page' })
-  @Transform((value: any) => parseInt(value))
   page: number;
 
   @IsOptional()
   @IsNotEmpty()
   @IsInt()
   @Expose({ name: 'pageSize' })
-  @Transform((value: any) => parseInt(value))
   pageSize: number;
 
   @IsOptional()

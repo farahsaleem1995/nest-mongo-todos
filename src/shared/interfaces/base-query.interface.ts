@@ -1,6 +1,6 @@
 export interface BaseQuery {
   sortBy: string;
-  isDescending: boolean;
+  isDescending: string;
   page: number;
   pageSize: number;
 }
