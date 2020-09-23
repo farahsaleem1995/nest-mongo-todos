@@ -1,17 +1,10 @@
-import { BadRequestException } from '@nestjs/common';
-import { Expose, Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsIn,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { Expose } from 'class-transformer';
+import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseQuery } from '../../shared/interfaces';
 import { TodoStatus } from '../constants';
+import { TodoFilter } from '../interfaces';
 
-export class GetTodosQueryDto implements BaseQuery {
+export class GetTodosQueryDto implements BaseQuery, TodoFilter {
   @IsOptional()
   @IsNotEmpty()
   @IsString()

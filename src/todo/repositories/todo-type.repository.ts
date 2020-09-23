@@ -13,8 +13,4 @@ export class TodoTypeRepository extends BaseRepository<TodoType> {
   ) {
     super(todoTypeModel);
   }
-
-  findByName(name: string): Promise<TodoType> {
-    return this.todoTypeModel.findOne({ name: name }).exec();
-  }
 }

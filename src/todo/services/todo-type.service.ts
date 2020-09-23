@@ -19,14 +19,14 @@ export class TodoTypeService {
     getTodoTypesQueryDto: GetTodoTypesQueryDto,
   ): Promise<TodoTypeDto[]> {
     const todoTypes: TodoType[] = await this.todoTypeRepository.findAll({
-      queryObj: getTodoTypesQueryDto,
+      query: getTodoTypesQueryDto,
     });
 
     return TodoTypeDto.fromModelArray(todoTypes);
   }
 
   async getById(id: string): Promise<TodoTypeDto> {
-    const todoType = await this.todoTypeRepository.findById(id);
+    const todoType = await this.todoTypeRepository.find({ _id: id });
 
     if (!todoType) {
       throw new NotFoundException();

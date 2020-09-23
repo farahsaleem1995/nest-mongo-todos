@@ -1,4 +1,11 @@
-import { Model } from 'mongoose';
+import {
+  CreateQuery,
+  FilterQuery,
+  Model,
+  ModelPopulateOptions,
+  QueryPopulateOptions,
+  UpdateQuery,
+} from 'mongoose';
 
 import { BaseModel } from '../models';
 import { BaseQuery, DeleteResult, UpdateResult } from '../interfaces';
@@ -10,30 +17,51 @@ import {
 export class BaseRepository<M extends BaseModel> {
   constructor(private readonly model: Model<M>) {}
 
-  findAll(options: { filterQuery?: any; queryObj?: BaseQuery }): Promise<M[]> {
-    const { filterQuery, queryObj } = options;
-    const query: {
+  findAll(options?: {
+    filter?: FilterQuery<M>;
+    query?: BaseQuery;
+    references?: QueryPopulateOptions[];
+  }): Promise<M[]> {
+    const { filter, query, references } = options;
+    const mongoQuery: {
       filter?: any;
       sort: string;
       skip: number;
       limit: number;
-    } = this.initQuery(queryObj);
+    } = this.initQuery(query);
 
-    query.filter = filterQuery ? this.excludeUndefinedProps(filterQuery) : {};
+    mongoQuery.filter = filter ? this.excludeUndefinedProps(filter) : {};
 
-    return this.model
-      .find(query.filter)
-      .sort(query.sort)
-      .skip(query.skip)
-      .limit(query.limit)
-      .exec();
+    const dbQuery = this.model
+      .find(mongoQuery.filter)
+      .sort(mongoQuery.sort)
+      .skip(mongoQuery.skip)
+      .limit(mongoQuery.limit);
+
+    if (references) {
+      references.forEach((reference: ModelPopulateOptions) => {
+        dbQuery.populate(reference);
+      });
+    }
+
+    return dbQuery.exec();
   }
 
-  findById(id: string): Promise<M> {
-    return this.model.findOne({ _id: id as any }).exec();
+  find(
+    criteria: FilterQuery<M>,
+    references?: QueryPopulateOptions[],
+  ): Promise<M> {
+    const dbQuery = this.model.findOne(criteria);
+
+    if (references)
+      references.forEach((reference: ModelPopulateOptions) => {
+        dbQuery.populate(reference);
+      });
+
+    return dbQuery.exec();
   }
 
-  async create(createQuery: any): Promise<M> {
+  async create(createQuery: CreateQuery<M>): Promise<M> {
     const createdTodo = new this.model(createQuery);
 
     try {
@@ -46,7 +74,10 @@ export class BaseRepository<M extends BaseModel> {
     }
   }
 
-  async update(id: string, updateQuery: any): Promise<UpdateResult<M>> {
+  async update(
+    id: string,
+    updateQuery: UpdateQuery<M>,
+  ): Promise<UpdateResult<M>> {
     const { lastErrorObject, value, ok }: any = await this.model
       .findOneAndUpdate({ _id: id as any }, updateQuery, {
         new: true,
