@@ -11,6 +11,12 @@ export class UpdateTodoDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(4)
+  @MaxLength(16)
+  title: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(4)
   @MaxLength(128)
   description: string;
 

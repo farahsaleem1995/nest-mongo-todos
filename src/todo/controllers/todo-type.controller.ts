@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Inject,
   Param,
   Patch,
   Post,
@@ -19,12 +20,15 @@ import {
 } from '../dto';
 import { TodoTypeDto } from '../dto/todo-type.dto';
 import { CreateTodoTypeValidationPipe } from '../pipes';
-import { TodoTypeService } from '../services';
 import { WhitelistValidationPipe } from '../../shared/pipes';
+import { ITodoTypeService } from '../interfaces';
 
-@Controller('todo-type')
+@Controller('todo-types')
 export class TodoTypeController {
-  constructor(private readonly todoTypeService: TodoTypeService) {}
+  constructor(
+    @Inject('ITodoTypeService')
+    private readonly todoTypeService: ITodoTypeService,
+  ) {}
 
   @Get('')
   @HttpCode(200)
@@ -59,12 +63,12 @@ export class TodoTypeController {
   }
 
   @Patch(':id')
-  @HttpCode(200)
+  @HttpCode(204)
   @UsePipes(ValidationPipe)
   patchTodoType(
     @Param('id') id: string,
     @Body() updateTodoTypeDto: UpdateTodoTypeDto,
-  ): Promise<TodoTypeDto> {
+  ): Promise<void> {
     return this.todoTypeService.update(id, updateTodoTypeDto);
   }
 

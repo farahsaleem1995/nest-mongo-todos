@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Inject,
   Param,
   Patch,
   Post,
@@ -12,7 +13,6 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 
-import { TodoService } from '../services';
 import {
   TodoDto,
   CreateTodoDto,
@@ -20,10 +20,14 @@ import {
   GetTodosQueryDto,
 } from '../dto';
 import { WhitelistValidationPipe } from '../../shared/pipes';
+import { ITodoService } from '../interfaces';
 
-@Controller('todo')
+@Controller('todos')
 export class TodoController {
-  constructor(private readonly todoService: TodoService) {}
+  constructor(
+    @Inject('ITodoService')
+    private readonly todoService: ITodoService,
+  ) {}
   @Get('')
   @HttpCode(200)
   @UsePipes(
@@ -56,11 +60,12 @@ export class TodoController {
   }
 
   @Patch(':id')
-  @HttpCode(200)
+  @HttpCode(204)
   patchTodo(
     @Param('id') id: string,
-    @Body(ValidationPipe) updateTodoDto: UpdateTodoDto,
-  ): Promise<TodoDto> {
+    @Body(ValidationPipe, new WhitelistValidationPipe(UpdateTodoDto))
+    updateTodoDto: UpdateTodoDto,
+  ): Promise<void> {
     return this.todoService.update(id, updateTodoDto);
   }
 

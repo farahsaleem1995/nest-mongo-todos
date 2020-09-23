@@ -13,8 +13,9 @@ import {
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { IBaseRepoistory } from '../interfaces';
 
-export class BaseRepository<M extends BaseModel> {
+export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
   constructor(private readonly model: Model<M>) {}
 
   findAll(options?: {
@@ -47,16 +48,18 @@ export class BaseRepository<M extends BaseModel> {
     return dbQuery.exec();
   }
 
-  find(
-    criteria: FilterQuery<M>,
-    references?: QueryPopulateOptions[],
-  ): Promise<M> {
+  find(options: {
+    criteria: FilterQuery<M>;
+    references?: QueryPopulateOptions[];
+  }): Promise<M> {
+    const { criteria, references } = options;
     const dbQuery = this.model.findOne(criteria);
 
-    if (references)
+    if (references) {
       references.forEach((reference: ModelPopulateOptions) => {
         dbQuery.populate(reference);
       });
+    }
 
     return dbQuery.exec();
   }

@@ -1,4 +1,5 @@
 import {
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -8,13 +9,19 @@ import { DeleteResult, UpdateResult } from 'src/shared/interfaces';
 import { CreateTodoTypeDto, GetTodoTypesQueryDto } from '../dto';
 import { TodoTypeDto } from '../dto/todo-type.dto';
 import { UpdateTodoTypeDto } from '../dto/update-todo-type.dto';
-import { CreateTodoTypeProperty, TodoTypeModel } from '../interfaces';
+import {
+  CreateTodoTypeProperty,
+  ITodoTypeRepository,
+  TodoTypeModel,
+} from '../interfaces';
 import { TodoType } from '../models';
-import { TodoTypeRepository } from '../repositories';
 
 @Injectable()
 export class TodoTypeService {
-  constructor(private readonly todoTypeRepository: TodoTypeRepository) {}
+  constructor(
+    @Inject('ITodoTypeRepository')
+    private readonly todoTypeRepository: ITodoTypeRepository,
+  ) {}
   async getAll(
     getTodoTypesQueryDto: GetTodoTypesQueryDto,
   ): Promise<TodoTypeDto[]> {
@@ -26,7 +33,9 @@ export class TodoTypeService {
   }
 
   async getById(id: string): Promise<TodoTypeDto> {
-    const todoType = await this.todoTypeRepository.find({ _id: id });
+    const todoType = await this.todoTypeRepository.find({
+      criteria: { _id: id },
+    });
 
     if (!todoType) {
       throw new NotFoundException();
@@ -54,7 +63,7 @@ export class TodoTypeService {
   async update(
     id: string,
     updateTododTypeDto: UpdateTodoTypeDto,
-  ): Promise<TodoTypeDto> {
+  ): Promise<void> {
     const updateResult: UpdateResult<TodoType> = await this.todoTypeRepository.update(
       id,
       updateTododTypeDto,
@@ -67,8 +76,6 @@ export class TodoTypeService {
     if (!updateResult.lastErrorObject.updatedExisting) {
       throw new NotFoundException();
     }
-
-    return TodoTypeDto.fromModel(updateResult.value);
   }
 
   async delete(id: string): Promise<void> {

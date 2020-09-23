@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -12,16 +13,22 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { TodoRepository, TodoTypeRepository } from '../repositories';
 import { Todo, TodoType } from '../models';
-import { TodoStatus } from '../constants';
+import { TodoReference, TodoStatus } from '../constants';
+import {
+  ITodoRepository,
+  ITodoService,
+  ITodoTypeRepository,
+} from '../interfaces';
 import { BaseQuery, DeleteResult, UpdateResult } from '../../shared/interfaces';
 
 @Injectable()
-export class TodoService {
+export class TodoService implements ITodoService {
   constructor(
-    private readonly todoRepository: TodoRepository,
-    private readonly todoTypeRepository: TodoTypeRepository,
+    @Inject('ITodoRepository')
+    private readonly todoRepository: ITodoRepository,
+    @Inject('ITodoTypeRepository')
+    private readonly todoTypeRepository: ITodoTypeRepository,
   ) {}
 
   async getAll(getTodosQueryDto?: GetTodosQueryDto): Promise<TodoDto[]> {
@@ -40,7 +47,8 @@ export class TodoService {
       query: query,
       references: [
         {
-          path: 'type',
+          path: TodoReference.TYPE,
+          select: 'name',
         },
       ],
     });
@@ -49,9 +57,10 @@ export class TodoService {
   }
 
   async getById(id: string): Promise<TodoDto> {
-    const todo = await this.todoRepository.find({ _id: id }, [
-      { path: 'type' },
-    ]);
+    const todo = await this.todoRepository.find({
+      criteria: { _id: id },
+      references: [{ path: TodoReference.TYPE, select: 'name' }],
+    });
 
     if (!todo) {
       throw new NotFoundException();
@@ -63,12 +72,12 @@ export class TodoService {
   async create(createTododDto: CreateTodoDto): Promise<TodoDto> {
     const { type, properties } = createTododDto;
 
-    const todoType = await this.todoTypeRepository.find(
-      {
+    const todoType = await this.todoTypeRepository.find({
+      criteria: {
         name: type,
       },
-      [{ path: 'type' }],
-    );
+      references: [{ path: TodoReference.TYPE }],
+    });
     if (!todoType) {
       throw new NotFoundException(`Todo type "${name}" not found`);
     }
@@ -89,7 +98,7 @@ export class TodoService {
     return TodoDto.fromModel(createdTodo);
   }
 
-  async update(id: string, updateTododDto: UpdateTodoDto): Promise<TodoDto> {
+  async update(id: string, updateTododDto: UpdateTodoDto): Promise<void> {
     const updateResult: UpdateResult<Todo> = await this.todoRepository.update(
       id,
       updateTododDto,
@@ -102,8 +111,6 @@ export class TodoService {
     if (!updateResult.lastErrorObject.updatedExisting) {
       throw new NotFoundException();
     }
-
-    return TodoDto.fromModel(updateResult.value);
   }
 
   async delete(id: string): Promise<void> {
