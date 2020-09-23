@@ -17,7 +17,7 @@ export class TodoDto {
   description: string;
 
   @Expose()
-  type: string;
+  type: { id: string; name: string };
 
   @Expose()
   properties: any;
@@ -44,7 +44,7 @@ export class TodoDto {
       title: title,
       status: status,
       description: description,
-      type: type.name,
+      type: { id: type._id, name: type.name },
       properties: properties,
       createdAt: createdAt?.toISOString(),
       updatedAt: updatedAt?.toISOString(),
@@ -70,7 +70,7 @@ export class TodoDto {
         title: title,
         status: status,
         description: description,
-        type: type.name,
+        type: { id: type._id, name: type.name },
         properties: properties,
         createdAt: createdAt?.toISOString(),
         updatedAt: updatedAt?.toISOString(),

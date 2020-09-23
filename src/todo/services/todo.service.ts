@@ -48,7 +48,7 @@ export class TodoService implements ITodoService {
       references: [
         {
           path: TodoReference.TYPE,
-          select: 'name',
+          select: '_id name',
         },
       ],
     });
@@ -59,7 +59,7 @@ export class TodoService implements ITodoService {
   async getById(id: string): Promise<TodoDto> {
     const todo = await this.todoRepository.find({
       criteria: { _id: id },
-      references: [{ path: TodoReference.TYPE, select: 'name' }],
+      references: [{ path: TodoReference.TYPE, select: '_id name' }],
     });
 
     if (!todo) {
