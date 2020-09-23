@@ -1,7 +1,6 @@
 import { Expose } from 'class-transformer';
 
 import { Todo } from '../models';
-import { TodoTypeDto } from './todo-type.dto';
 
 export class TodoDto {
   @Expose()
@@ -44,7 +43,7 @@ export class TodoDto {
       title: title,
       status: status,
       description: description,
-      type: { id: type._id, name: type.name },
+      type: { id: type.id, name: type.name },
       properties: properties,
       createdAt: createdAt?.toISOString(),
       updatedAt: updatedAt?.toISOString(),
@@ -54,29 +53,6 @@ export class TodoDto {
   }
 
   static fromModelArray(todos: Todo[]): TodoDto[] {
-    return todos.map((todo: Todo) => {
-      const {
-        id,
-        title,
-        status,
-        description,
-        type: type,
-        properties,
-        createdAt,
-        updatedAt,
-      } = todo;
-      const todoDto: TodoDto = {
-        id: id,
-        title: title,
-        status: status,
-        description: description,
-        type: { id: type._id, name: type.name },
-        properties: properties,
-        createdAt: createdAt?.toISOString(),
-        updatedAt: updatedAt?.toISOString(),
-      };
-
-      return todoDto;
-    });
+    return todos.map((todo: Todo) => this.fromModel(todo));
   }
 }

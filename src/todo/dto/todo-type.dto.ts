@@ -23,17 +23,6 @@ export class TodoTypeDto {
   }
 
   static fromModelArray(todoTypes: TodoType[]): TodoTypeDto[] {
-    return todoTypes.map((todoType: TodoType) => {
-      const { id, name, typeModel } = todoType;
-
-      const todoTypeDto: TodoTypeDto = {
-        id: id,
-        name: name,
-        properties: typeModel.properties,
-        required: typeModel.required,
-      };
-
-      return todoTypeDto;
-    });
+    return todoTypes.map((todoType: TodoType) => this.fromModel(todoType));
   }
 }
