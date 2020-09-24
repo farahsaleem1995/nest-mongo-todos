@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { CreateTodoTypeProperty } from '../interfaces';
+import { ICreateTodoTypeProperty } from '../interfaces';
 
 export class CreateTodoTypeDto {
   @IsString()
@@ -8,5 +8,5 @@ export class CreateTodoTypeDto {
   name: string;
 
   @IsNotEmpty()
-  properties: CreateTodoTypeProperty[];
+  properties: ICreateTodoTypeProperty[];
 }

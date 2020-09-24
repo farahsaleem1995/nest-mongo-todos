@@ -1,4 +1,13 @@
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
+import { TodoStatus } from '../constants';
+
+import { ITodoType } from '../interfaces';
 
 export class CreateTodoDto {
   @IsString()
@@ -13,10 +22,19 @@ export class CreateTodoDto {
   @MaxLength(128)
   description: string;
 
-  @IsString()
   @IsNotEmpty()
-  type: string;
+  type: ITodoType;
 
-  @IsNotEmpty()
-  properties: any;
+  static toModel(createTodoDto: CreateTodoDto): any {
+    const { title, description, type } = createTodoDto;
+    const { typeId, properties } = type;
+
+    return {
+      title: title,
+      description: description,
+      status: TodoStatus.TODO,
+      type: typeId,
+      properties: properties,
+    };
+  }
 }

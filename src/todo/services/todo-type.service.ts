@@ -10,9 +10,9 @@ import { CreateTodoTypeDto, GetTodoTypesQueryDto } from '../dto';
 import { TodoTypeDto } from '../dto/todo-type.dto';
 import { UpdateTodoTypeDto } from '../dto/update-todo-type.dto';
 import {
-  CreateTodoTypeProperty,
+  ICreateTodoTypeProperty,
   ITodoTypeRepository,
-  TodoTypeModel,
+  ITodoTypeModel,
 } from '../interfaces';
 import { TodoType } from '../models';
 
@@ -47,7 +47,7 @@ export class TodoTypeService {
   async create(createTodoTypeDto: CreateTodoTypeDto): Promise<TodoTypeDto> {
     const todoType: {
       name: string;
-      typeModel: TodoTypeModel;
+      typeModel: ITodoTypeModel;
     } = {
       name: createTodoTypeDto.name,
       typeModel: this.buildSchema({
@@ -91,10 +91,10 @@ export class TodoTypeService {
   }
 
   private buildSchema(obj: {
-    properties: CreateTodoTypeProperty[];
-  }): TodoTypeModel {
+    properties: ICreateTodoTypeProperty[];
+  }): ITodoTypeModel {
     const typeProperties = obj.properties.reduce(
-      (accumulator: any, currentValue: CreateTodoTypeProperty): any => {
+      (accumulator: any, currentValue: ICreateTodoTypeProperty): any => {
         const propName: string = currentValue.name;
         const propType: string = currentValue.type;
         const items: any = currentValue.items

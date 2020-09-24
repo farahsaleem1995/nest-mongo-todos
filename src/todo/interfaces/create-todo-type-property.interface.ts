@@ -1,11 +1,11 @@
 import { TodoTypeProperty } from '../constants';
 
-export interface CreateTodoTypeProperty {
+export interface ICreateTodoTypeProperty {
   name: string;
 
   type: TodoTypeProperty;
 
   isRequired: boolean;
 
-  items?: CreateTodoTypeProperty[];
+  items?: ICreateTodoTypeProperty[];
 }

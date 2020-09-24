@@ -69,28 +69,17 @@ export class TodoService implements ITodoService {
     return TodoDto.fromModel(todo);
   }
 
-  async create(createTododDto: CreateTodoDto): Promise<TodoDto> {
-    const { type, properties } = createTododDto;
+  async create(createTodoDto: CreateTodoDto): Promise<TodoDto> {
+    const { typeId, properties } = createTodoDto.type;
 
-    const todoType = await this.todoTypeRepository.find({
-      criteria: {
-        name: type,
-      },
-      references: [{ path: TodoReference.TYPE }],
+    const todoType: TodoType = await this.checkType({
+      typeId: typeId,
+      properties: properties,
     });
-    if (!todoType) {
-      throw new NotFoundException(`Todo type "${name}" not found`);
-    }
 
-    const isValidType: boolean = await this.validateType(properties, todoType);
-    if (!isValidType) {
-      throw new BadRequestException(
-        `The provided properties is not valid for "${createTododDto.type}" type`,
-      );
-    }
-
+    const todo = CreateTodoDto.toModel(createTodoDto);
     const createdTodo = await this.todoRepository.create({
-      ...createTododDto,
+      ...todo,
       status: TodoStatus.TODO,
       type: todoType,
     });
@@ -98,10 +87,21 @@ export class TodoService implements ITodoService {
     return TodoDto.fromModel(createdTodo);
   }
 
-  async update(id: string, updateTododDto: UpdateTodoDto): Promise<void> {
+  async update(id: string, updateTodoDto: UpdateTodoDto): Promise<void> {
+    if (updateTodoDto.type) {
+      const { typeId, properties } = updateTodoDto.type;
+      console.log(typeId);
+
+      if (typeId) {
+        await this.checkType({ typeId: typeId, properties: properties });
+      }
+    }
+
+    const todo = UpdateTodoDto.toModel(updateTodoDto);
+    console.log(todo);
     const updateResult: UpdateResult<Todo> = await this.todoRepository.update(
       id,
-      updateTododDto,
+      todo,
     );
 
     if (updateResult.ok !== 1) {
@@ -123,6 +123,32 @@ export class TodoService implements ITodoService {
     if (deletdResult.deletedCount === 0) {
       throw new NotFoundException();
     }
+  }
+
+  private async checkType(data: {
+    typeId: string;
+    properties: any;
+  }): Promise<TodoType> {
+    const { typeId, properties } = data;
+
+    const todoType = await this.todoTypeRepository.find({
+      criteria: {
+        _id: typeId,
+      },
+      references: [{ path: TodoReference.TYPE }],
+    });
+    if (!todoType) {
+      throw new NotFoundException(`Todo type with ID "${typeId}" not found`);
+    }
+
+    const isValidType: boolean = await this.validateType(properties, todoType);
+    if (!isValidType) {
+      throw new BadRequestException(
+        `The provided properties is not valid for type with ID "${typeId}"`,
+      );
+    }
+
+    return todoType;
   }
 
   private async validateType(obj: any, todoType: TodoType): Promise<boolean> {

@@ -21,6 +21,7 @@ import {
 } from '../dto';
 import { WhitelistValidationPipe } from '../../shared/pipes';
 import { ITodoService } from '../interfaces';
+import { TodoTypeValidtionPipe } from '../pipes/todo-type-validation.pipe';
 
 @Controller('todos')
 export class TodoController {
@@ -54,7 +55,7 @@ export class TodoController {
   @Post('')
   @HttpCode(201)
   postTodo(
-    @Body(ValidationPipe) createTodoDto: CreateTodoDto,
+    @Body(ValidationPipe, TodoTypeValidtionPipe) createTodoDto: CreateTodoDto,
   ): Promise<TodoDto> {
     return this.todoService.create(createTodoDto);
   }
@@ -63,7 +64,11 @@ export class TodoController {
   @HttpCode(204)
   patchTodo(
     @Param('id') id: string,
-    @Body(ValidationPipe, new WhitelistValidationPipe(UpdateTodoDto))
+    @Body(
+      ValidationPipe,
+      TodoTypeValidtionPipe,
+      new WhitelistValidationPipe(UpdateTodoDto),
+    )
     updateTodoDto: UpdateTodoDto,
   ): Promise<void> {
     return this.todoService.update(id, updateTodoDto);

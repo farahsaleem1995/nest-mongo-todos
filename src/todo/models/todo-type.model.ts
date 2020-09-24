@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { BaseModel } from '../../shared/models';
-import { TodoTypeModel } from '../interfaces/todo-type-model.interface';
+import { ITodoTypeModel } from '../interfaces/todo-type-model.interface';
 
 @Schema({ timestamps: true })
 export class TodoType extends BaseModel {
@@ -9,7 +9,7 @@ export class TodoType extends BaseModel {
   name: string;
 
   @Prop({ type: Object, required: true })
-  typeModel: TodoTypeModel;
+  typeModel: ITodoTypeModel;
 }
 
 export const TodoTypeSchema = SchemaFactory.createForClass(TodoType);

@@ -1,4 +1,4 @@
-export interface TodoTypeModel {
+export interface ITodoTypeModel {
   type: string;
 
   properties: any;
