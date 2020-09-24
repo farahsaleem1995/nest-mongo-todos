@@ -20,7 +20,11 @@ import {
   ITodoService,
   ITodoTypeRepository,
 } from '../interfaces';
-import { BaseQuery, DeleteResult, UpdateResult } from '../../shared/interfaces';
+import {
+  IBaseQuery,
+  IDeleteResult,
+  IUpdateResult,
+} from '../../shared/interfaces';
 
 @Injectable()
 export class TodoService implements ITodoService {
@@ -36,7 +40,7 @@ export class TodoService implements ITodoService {
       title: getTodosQueryDto.title,
       status: getTodosQueryDto.status,
     };
-    const query: BaseQuery = {
+    const query: IBaseQuery = {
       sortBy: getTodosQueryDto.sortBy,
       isDescending: getTodosQueryDto.isDescending,
       page: getTodosQueryDto.page,
@@ -90,7 +94,6 @@ export class TodoService implements ITodoService {
   async update(id: string, updateTodoDto: UpdateTodoDto): Promise<void> {
     if (updateTodoDto.type) {
       const { typeId, properties } = updateTodoDto.type;
-      console.log(typeId);
 
       if (typeId) {
         await this.checkType({ typeId: typeId, properties: properties });
@@ -98,8 +101,7 @@ export class TodoService implements ITodoService {
     }
 
     const todo = UpdateTodoDto.toModel(updateTodoDto);
-    console.log(todo);
-    const updateResult: UpdateResult<Todo> = await this.todoRepository.update(
+    const updateResult: IUpdateResult<Todo> = await this.todoRepository.update(
       id,
       todo,
     );
@@ -114,7 +116,7 @@ export class TodoService implements ITodoService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletdResult: DeleteResult = await this.todoRepository.delete(id);
+    const deletdResult: IDeleteResult = await this.todoRepository.delete(id);
 
     if (deletdResult.ok !== 1) {
       throw new InternalServerErrorException();

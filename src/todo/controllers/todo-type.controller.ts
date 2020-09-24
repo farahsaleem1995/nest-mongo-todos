@@ -18,7 +18,7 @@ import {
   GetTodoTypesQueryDto,
   UpdateTodoTypeDto,
 } from '../dto';
-import { TodoTypeDto } from '../dto/todo-type.dto';
+import { TodoTypeDto } from '../dto';
 import { CreateTodoTypeValidationPipe } from '../pipes';
 import { WhitelistValidationPipe } from '../../shared/pipes';
 import { ITodoTypeService } from '../interfaces';

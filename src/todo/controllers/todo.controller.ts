@@ -19,9 +19,9 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { WhitelistValidationPipe } from '../../shared/pipes';
 import { ITodoService } from '../interfaces';
-import { TodoTypeValidtionPipe } from '../pipes/todo-type-validation.pipe';
+import { TodoTypeValidtionPipe } from '../pipes';
+import { WhitelistValidationPipe } from '../../shared/pipes';
 
 @Controller('todos')
 export class TodoController {

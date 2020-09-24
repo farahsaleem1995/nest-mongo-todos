@@ -1,4 +1,4 @@
-import { TodoType } from '../models';
+import { TodoType } from '../../models';
 
 export class TodoTypeDto {
   id: string;

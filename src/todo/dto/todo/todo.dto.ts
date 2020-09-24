@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
 
-import { Todo } from '../models';
+import { Todo } from '../../models';
 
 export class TodoDto {
   @Expose()
@@ -43,7 +43,7 @@ export class TodoDto {
       title: title,
       status: status,
       description: description,
-      type: { id: type.id, name: type.name },
+      type: type ? { id: type.id, name: type.name } : null,
       properties: properties,
       createdAt: createdAt?.toISOString(),
       updatedAt: updatedAt?.toISOString(),

@@ -5,8 +5,8 @@ import {
   PipeTransform,
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { ClassType } from 'class-transformer/ClassTransformer';
 import { validate } from 'class-validator';
+import { ClassType } from 'class-transformer/ClassTransformer';
 
 @Injectable()
 export class WhitelistValidationPipe<Dto>

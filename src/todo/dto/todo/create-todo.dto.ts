@@ -5,9 +5,9 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { TodoStatus } from '../constants';
+import { TodoStatus } from '../../constants';
 
-import { ITodoType } from '../interfaces';
+import { ITodoType } from '../../interfaces';
 
 export class CreateTodoDto {
   @IsString()

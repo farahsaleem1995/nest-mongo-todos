@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-import { ICreateTodoTypeProperty } from '../interfaces';
+import { ITodoTypeProperty } from '../../interfaces';
 
 export class UpdateTodoTypeDto {
   @IsString()
@@ -8,5 +8,5 @@ export class UpdateTodoTypeDto {
   name: string;
 
   @IsOptional()
-  properties: ICreateTodoTypeProperty[];
+  properties: ITodoTypeProperty[];
 }

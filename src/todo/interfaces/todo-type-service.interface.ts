@@ -1,9 +1,9 @@
-import { TodoTypeDto } from '../../dto/todo-type.dto';
 import {
   CreateTodoTypeDto,
   GetTodoTypesQueryDto,
+  TodoTypeDto,
   UpdateTodoTypeDto,
-} from '../../dto';
+} from '../dto';
 
 export interface ITodoTypeService {
   getAll(getTodoTypeQueryDto: GetTodoTypesQueryDto): Promise<TodoTypeDto[]>;

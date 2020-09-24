@@ -7,8 +7,8 @@ import {
   MinLength,
 } from 'class-validator';
 
-import { TodoStatus } from '../constants';
-import { ITodoType } from '../interfaces';
+import { TodoStatus } from '../../constants';
+import { ITodoType } from '../../interfaces';
 
 export class UpdateTodoDto {
   @IsString()
@@ -35,20 +35,13 @@ export class UpdateTodoDto {
 
   static toModel(updateTodoDto: UpdateTodoDto): any {
     const model: any = {};
+    const { title, status, description, type } = updateTodoDto;
 
-    if (updateTodoDto.title) {
-      model.title = updateTodoDto.title;
-    }
-    if (updateTodoDto.description) {
-      model.description = updateTodoDto.description;
-    }
-    if (updateTodoDto.status) {
-      model.status = updateTodoDto.status;
-    }
-    if (updateTodoDto.type) {
-      model.type = updateTodoDto.type.typeId;
-      model.properties = updateTodoDto.type.properties;
-    }
+    model.title = title;
+    model.description = description;
+    model.status = status;
+    model.type = type ? type.typeId : undefined;
+    model.properties = type ? type.properties : undefined;
 
     return model;
   }

@@ -1,5 +1,5 @@
+import { IUpdateResult, IDeleteResult } from './';
 import { BaseModel } from '../models';
-import { UpdateResult, DeleteResult } from './';
 
 export interface IBaseRepoistory<M extends BaseModel> {
   findAll(options?: {
@@ -12,7 +12,7 @@ export interface IBaseRepoistory<M extends BaseModel> {
 
   create(createQuery: any): Promise<M>;
 
-  update(id: string, updateQuery: any): Promise<UpdateResult<M>>;
+  update(id: string, updateQuery: any): Promise<IUpdateResult<M>>;
 
-  delete(id: string): Promise<DeleteResult>;
+  delete(id: string): Promise<IDeleteResult>;
 }

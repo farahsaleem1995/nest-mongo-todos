@@ -1,4 +1,8 @@
 import {
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import {
   CreateQuery,
   FilterQuery,
   Model,
@@ -8,19 +12,19 @@ import {
 } from 'mongoose';
 
 import { BaseModel } from '../models';
-import { BaseQuery, DeleteResult, UpdateResult } from '../interfaces';
 import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { IBaseRepoistory } from '../interfaces';
+  IBaseQuery,
+  IDeleteResult,
+  IUpdateResult,
+  IBaseRepoistory,
+} from '../interfaces';
 
 export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
   constructor(private readonly model: Model<M>) {}
 
   findAll(options?: {
     filter?: FilterQuery<M>;
-    query?: BaseQuery;
+    query?: IBaseQuery;
     references?: QueryPopulateOptions[];
   }): Promise<M[]> {
     const { filter, query, references } = options;
@@ -80,31 +84,33 @@ export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
   async update(
     id: string,
     updateQuery: UpdateQuery<M>,
-  ): Promise<UpdateResult<M>> {
+  ): Promise<IUpdateResult<M>> {
+    const updateModel: any = this.excludeUndefinedProps(updateQuery);
+
     const { lastErrorObject, value, ok }: any = await this.model
-      .findOneAndUpdate({ _id: id as any }, updateQuery, {
+      .findOneAndUpdate({ _id: id as any }, updateModel, {
         new: true,
         rawResult: true,
       })
       .exec();
 
-    const result: UpdateResult<M> = { lastErrorObject, value, ok };
+    const result: IUpdateResult<M> = { lastErrorObject, value, ok };
 
     return result;
   }
 
-  async delete(id: string): Promise<DeleteResult> {
+  async delete(id: string): Promise<IDeleteResult> {
     const { n, ok, deletedCount } = await this.model
       .deleteOne({ _id: id as any })
       .exec();
 
-    const result: DeleteResult = { n, ok, deletedCount };
+    const result: IDeleteResult = { n, ok, deletedCount };
 
     return result;
   }
 
   protected initQuery(
-    queryObj?: BaseQuery,
+    queryObj?: IBaseQuery,
   ): { sort: string; skip: number; limit: number } {
     if (!queryObj) {
       return {
@@ -127,8 +133,8 @@ export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
     return { sort, skip, limit };
   }
 
-  protected excludeUndefinedProps(filterQuery: any): any {
-    return Object.entries(filterQuery).reduce((accumulator, currentValue) => {
+  protected excludeUndefinedProps(obj: any): any {
+    return Object.entries(obj).reduce((accumulator, currentValue) => {
       const [key, value] = currentValue;
 
       if (value !== undefined) {

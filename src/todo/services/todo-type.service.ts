@@ -4,13 +4,16 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { DeleteResult, UpdateResult } from 'src/shared/interfaces';
+import { IDeleteResult, IUpdateResult } from 'src/shared/interfaces';
 
-import { CreateTodoTypeDto, GetTodoTypesQueryDto } from '../dto';
-import { TodoTypeDto } from '../dto/todo-type.dto';
-import { UpdateTodoTypeDto } from '../dto/update-todo-type.dto';
 import {
-  ICreateTodoTypeProperty,
+  CreateTodoTypeDto,
+  GetTodoTypesQueryDto,
+  TodoTypeDto,
+  UpdateTodoTypeDto,
+} from '../dto';
+import {
+  ITodoTypeProperty,
   ITodoTypeRepository,
   ITodoTypeModel,
 } from '../interfaces';
@@ -64,7 +67,7 @@ export class TodoTypeService {
     id: string,
     updateTododTypeDto: UpdateTodoTypeDto,
   ): Promise<void> {
-    const updateResult: UpdateResult<TodoType> = await this.todoTypeRepository.update(
+    const updateResult: IUpdateResult<TodoType> = await this.todoTypeRepository.update(
       id,
       updateTododTypeDto,
     );
@@ -79,7 +82,9 @@ export class TodoTypeService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletdResult: DeleteResult = await this.todoTypeRepository.delete(id);
+    const deletdResult: IDeleteResult = await this.todoTypeRepository.delete(
+      id,
+    );
 
     if (deletdResult.ok !== 1) {
       throw new InternalServerErrorException();
@@ -91,10 +96,10 @@ export class TodoTypeService {
   }
 
   private buildSchema(obj: {
-    properties: ICreateTodoTypeProperty[];
+    properties: ITodoTypeProperty[];
   }): ITodoTypeModel {
     const typeProperties = obj.properties.reduce(
-      (accumulator: any, currentValue: ICreateTodoTypeProperty): any => {
+      (accumulator: any, currentValue: ITodoTypeProperty): any => {
         const propName: string = currentValue.name;
         const propType: string = currentValue.type;
         const items: any = currentValue.items
