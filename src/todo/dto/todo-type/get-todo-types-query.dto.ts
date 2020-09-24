@@ -18,4 +18,15 @@ export class GetTodoTypesQueryDto implements IBaseQuery {
 
   @QueryPageSize()
   pageSize: number;
+
+  static toModel(
+    getTodoTypesQueryDto: GetTodoTypesQueryDto,
+  ): { filter: any; query: IBaseQuery } {
+    const { sortBy, isDescending, page, pageSize } = getTodoTypesQueryDto;
+
+    return {
+      filter: {},
+      query: { sortBy, isDescending, page, pageSize },
+    };
+  }
 }

@@ -1,4 +1,7 @@
+import { morphism } from 'morphism';
+
 import { TodoType } from '../../models';
+import { todoTypeSchema } from '../../morphism';
 
 export class TodoTypeDto {
   id: string;
@@ -10,19 +13,10 @@ export class TodoTypeDto {
   required: string[];
 
   static fromModel(todoType: TodoType): TodoTypeDto {
-    const { id, name, typeModel } = todoType;
-
-    const todoTypeDto: TodoTypeDto = {
-      id: id,
-      name: name,
-      properties: typeModel.properties,
-      required: typeModel.required,
-    };
-
-    return todoTypeDto;
+    return morphism(todoTypeSchema, todoType);
   }
 
   static fromModelArray(todoTypes: TodoType[]): TodoTypeDto[] {
-    return todoTypes.map((todoType: TodoType) => this.fromModel(todoType));
+    return morphism(todoTypeSchema, todoTypes);
   }
 }

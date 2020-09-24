@@ -5,7 +5,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import * as Ajv from 'ajv';
 
 import {
   TodoDto,
@@ -13,18 +12,14 @@ import {
   UpdateTodoDto,
   GetTodosQueryDto,
 } from '../dto';
-import { Todo, TodoType } from '../models';
-import { TodoReference, TodoStatus } from '../constants';
+import { TodoType } from '../models';
+import { TodoReference } from '../constants';
 import {
   ITodoRepository,
   ITodoService,
   ITodoTypeRepository,
 } from '../interfaces';
-import {
-  IBaseQuery,
-  IDeleteResult,
-  IUpdateResult,
-} from '../../shared/interfaces';
+import { validateType } from '../utils';
 
 @Injectable()
 export class TodoService implements ITodoService {
@@ -36,19 +31,10 @@ export class TodoService implements ITodoService {
   ) {}
 
   async getAll(getTodosQueryDto?: GetTodosQueryDto): Promise<TodoDto[]> {
-    const filter: { title: string; status: string } = {
-      title: getTodosQueryDto.title,
-      status: getTodosQueryDto.status,
-    };
-    const query: IBaseQuery = {
-      sortBy: getTodosQueryDto.sortBy,
-      isDescending: getTodosQueryDto.isDescending,
-      page: getTodosQueryDto.page,
-      pageSize: getTodosQueryDto.pageSize,
-    };
+    const { filter, query } = GetTodosQueryDto.toModel(getTodosQueryDto);
     const todos = await this.todoRepository.findAll({
-      filter: filter,
-      query: query,
+      filter,
+      query,
       references: [
         {
           path: TodoReference.TYPE,
@@ -76,17 +62,10 @@ export class TodoService implements ITodoService {
   async create(createTodoDto: CreateTodoDto): Promise<TodoDto> {
     const { typeId, properties } = createTodoDto.type;
 
-    const todoType: TodoType = await this.checkType({
-      typeId: typeId,
-      properties: properties,
-    });
+    await this.checkType({ typeId: typeId, properties: properties });
 
     const todo = CreateTodoDto.toModel(createTodoDto);
-    const createdTodo = await this.todoRepository.create({
-      ...todo,
-      status: TodoStatus.TODO,
-      type: todoType,
-    });
+    const createdTodo = await this.todoRepository.create({ ...todo });
 
     return TodoDto.fromModel(createdTodo);
   }
@@ -101,10 +80,7 @@ export class TodoService implements ITodoService {
     }
 
     const todo = UpdateTodoDto.toModel(updateTodoDto);
-    const updateResult: IUpdateResult<Todo> = await this.todoRepository.update(
-      id,
-      todo,
-    );
+    const updateResult = await this.todoRepository.update(id, todo);
 
     if (updateResult.ok !== 1) {
       throw new InternalServerErrorException();
@@ -116,7 +92,7 @@ export class TodoService implements ITodoService {
   }
 
   async delete(id: string): Promise<void> {
-    const deletdResult: IDeleteResult = await this.todoRepository.delete(id);
+    const deletdResult = await this.todoRepository.delete(id);
 
     if (deletdResult.ok !== 1) {
       throw new InternalServerErrorException();
@@ -143,7 +119,10 @@ export class TodoService implements ITodoService {
       throw new NotFoundException(`Todo type with ID "${typeId}" not found`);
     }
 
-    const isValidType: boolean = await this.validateType(properties, todoType);
+    const isValidType: boolean = await validateType(
+      properties,
+      todoType.typeModel,
+    );
     if (!isValidType) {
       throw new BadRequestException(
         `The provided properties is not valid for type with ID "${typeId}"`,
@@ -151,13 +130,5 @@ export class TodoService implements ITodoService {
     }
 
     return todoType;
-  }
-
-  private async validateType(obj: any, todoType: TodoType): Promise<boolean> {
-    const ajv = new Ajv();
-    const validate: Ajv.ValidateFunction = ajv.compile(todoType.typeModel);
-    const valid: boolean | PromiseLike<any> = validate(obj);
-
-    return !valid ? false : true;
   }
 }

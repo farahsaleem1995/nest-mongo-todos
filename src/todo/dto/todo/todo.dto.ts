@@ -1,6 +1,8 @@
 import { Expose } from 'class-transformer';
+import { morphism } from 'morphism';
 
 import { Todo } from '../../models';
+import { todoSchema } from '../../morphism';
 
 export class TodoDto {
   @Expose()
@@ -28,28 +30,7 @@ export class TodoDto {
   updatedAt?: string;
 
   static fromModel(todo: Todo): TodoDto {
-    const {
-      id,
-      title,
-      status,
-      description,
-      type: type,
-      properties,
-      createdAt,
-      updatedAt,
-    } = todo;
-    const todoDto: TodoDto = {
-      id: id,
-      title: title,
-      status: status,
-      description: description,
-      type: type ? { id: type.id, name: type.name } : null,
-      properties: properties,
-      createdAt: createdAt?.toISOString(),
-      updatedAt: updatedAt?.toISOString(),
-    };
-
-    return todoDto;
+    return morphism(todoSchema, todo);
   }
 
   static fromModelArray(todos: Todo[]): TodoDto[] {

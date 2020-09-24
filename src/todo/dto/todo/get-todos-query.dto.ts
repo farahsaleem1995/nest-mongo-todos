@@ -41,4 +41,22 @@ export class GetTodosQueryDto implements IBaseQuery, ITodoFilter {
   @IsString()
   @Expose({ name: 'search' })
   title: string;
+
+  static toModel(
+    getTodosQueryDto: GetTodosQueryDto,
+  ): { filter: any; query: IBaseQuery } {
+    const {
+      title,
+      status,
+      sortBy,
+      isDescending,
+      page,
+      pageSize,
+    } = getTodosQueryDto;
+
+    return {
+      filter: { title, status },
+      query: { sortBy, isDescending, page, pageSize },
+    };
+  }
 }

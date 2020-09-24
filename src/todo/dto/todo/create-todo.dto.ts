@@ -1,13 +1,9 @@
-import {
-  IsNotEmpty,
-  IsObject,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
-import { TodoStatus } from '../../constants';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { morphism } from 'morphism';
 
 import { ITodoType } from '../../interfaces';
+import { ITodo } from '../../models';
+import { createTodoSchema } from '../../morphism';
 
 export class CreateTodoDto {
   @IsString()
@@ -25,16 +21,7 @@ export class CreateTodoDto {
   @IsNotEmpty()
   type: ITodoType;
 
-  static toModel(createTodoDto: CreateTodoDto): any {
-    const { title, description, type } = createTodoDto;
-    const { typeId, properties } = type;
-
-    return {
-      title: title,
-      description: description,
-      status: TodoStatus.TODO,
-      type: typeId,
-      properties: properties,
-    };
+  static toModel(createTodoDto: CreateTodoDto): ITodo {
+    return morphism(createTodoSchema, createTodoDto);
   }
 }

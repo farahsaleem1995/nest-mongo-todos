@@ -6,7 +6,7 @@ import { TodoStatus } from '../constants';
 import { TodoType } from './todo-type.model';
 
 @Schema({ timestamps: true })
-export class Todo extends BaseModel {
+export class Todo extends BaseModel implements ITodo {
   @Prop({ type: String, required: true })
   title: string;
 
@@ -32,3 +32,15 @@ export class Todo extends BaseModel {
 }
 
 export const TodoSchema = SchemaFactory.createForClass(Todo);
+
+export interface ITodo {
+  title: string;
+
+  type: TodoType;
+
+  description: string;
+
+  status: string;
+
+  properties: any;
+}
