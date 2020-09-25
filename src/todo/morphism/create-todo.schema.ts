@@ -1,8 +1,8 @@
 import { createSchema } from 'morphism';
 import { TodoStatus } from 'src/todo/constants';
 
-import { CreateTodoDto } from '../../dto';
-import { ITodo } from '../../models';
+import { CreateTodoDto } from '../dto';
+import { ITodo } from '../models';
 
 export const createTodoSchema = createSchema<ITodo, CreateTodoDto>({
   title: 'title',

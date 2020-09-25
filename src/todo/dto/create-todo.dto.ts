@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { morphism } from 'morphism';
 
-import { ITodoType } from '../../interfaces';
-import { ITodo } from '../../models';
-import { createTodoSchema } from '../../morphism';
+import { ITodoType } from '../interfaces';
+import { ITodo } from '../models';
+import { createTodoSchema } from '../morphism';
 
 export class CreateTodoDto {
   @IsString()

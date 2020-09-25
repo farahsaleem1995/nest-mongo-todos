@@ -1,9 +1,9 @@
 import { Expose } from 'class-transformer';
 import { IsIn, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { TodoStatus } from '../../constants';
-import { ITodoFilter } from '../../interfaces';
-import { IBaseQuery } from '../../../shared/interfaces';
+import { TodoStatus } from '../constants';
+import { ITodoFilter } from '../interfaces';
+import { IBaseQuery } from '../../shared/interfaces';
 
 export class GetTodosQueryDto implements IBaseQuery, ITodoFilter {
   @IsOptional()

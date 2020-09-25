@@ -1,7 +1,7 @@
 import { createSchema } from 'morphism';
 
-import { CreateTodoDto, UpdateTodoDto } from '../../dto';
-import { ITodo } from '../../models';
+import { CreateTodoDto, UpdateTodoDto } from '../dto';
+import { ITodo } from '../models';
 
 export const updateTodoSchema = createSchema<ITodo, UpdateTodoDto>({
   title: 'title',

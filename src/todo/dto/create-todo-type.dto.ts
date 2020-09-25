@@ -1,9 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { morphism } from 'morphism';
 
-import { ITodoType } from '../../models';
-import { ITodoTypeProperty } from '../../interfaces';
-import { createTodoTypeSchema } from '../../morphism/todo-type';
+import { ITodoType } from '../models';
+import { ISchemaProperty } from '../../shared/interfaces';
+import { createTodoTypeSchema } from '../morphism';
 
 export class CreateTodoTypeDto {
   @IsString()
@@ -11,7 +11,7 @@ export class CreateTodoTypeDto {
   name: string;
 
   @IsNotEmpty()
-  properties: ITodoTypeProperty[];
+  properties: ISchemaProperty[];
 
   static toModel(createTodoTypeDto: CreateTodoTypeDto): ITodoType {
     return morphism(createTodoTypeSchema, createTodoTypeDto);

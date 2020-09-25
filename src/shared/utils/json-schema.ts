@@ -1,12 +1,12 @@
 import * as Ajv from 'ajv';
 
-import { ITodoTypeModel, ITodoTypeProperty } from '../interfaces';
+import { ISchemaModel, ISchemaProperty } from '../interfaces';
 
 export const buildSchema = (obj: {
-  properties: ITodoTypeProperty[];
-}): ITodoTypeModel => {
+  properties: ISchemaProperty[];
+}): ISchemaModel => {
   const typeProperties = obj.properties.reduce(
-    (accumulator: any, currentValue: ITodoTypeProperty): any => {
+    (accumulator: any, currentValue: ISchemaProperty): any => {
       const propName: string = currentValue.name;
       const propType: string = currentValue.type;
       const items: any = currentValue.items
@@ -36,7 +36,7 @@ export const buildSchema = (obj: {
 
 export const validateType = async (
   obj: any,
-  typeModel: ITodoTypeModel,
+  typeModel: ISchemaModel,
 ): Promise<boolean> => {
   const ajv = new Ajv();
   const validate = ajv.compile(typeModel);

@@ -1,8 +1,8 @@
 import { Expose } from 'class-transformer';
 import { morphism } from 'morphism';
 
-import { Todo } from '../../models';
-import { todoSchema } from '../../morphism';
+import { Todo } from '../models';
+import { todoSchema } from '../morphism';
 
 export class TodoDto {
   @Expose()

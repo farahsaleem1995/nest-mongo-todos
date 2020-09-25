@@ -4,8 +4,9 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+
 import { CreateTodoTypeDto } from '../dto';
-import { ITodoTypeProperty } from '../interfaces';
+import { ISchemaProperty } from '../../shared/interfaces';
 
 @Injectable()
 export class CreateTodoTypeValidationPipe
@@ -16,7 +17,7 @@ export class CreateTodoTypeValidationPipe
   ): CreateTodoTypeDto {
     const message: string[] = [];
 
-    value.properties.forEach((property: ITodoTypeProperty) => {
+    value.properties.forEach((property: ISchemaProperty) => {
       if (!property.name) {
         message.push('Property name should not be empty');
       }

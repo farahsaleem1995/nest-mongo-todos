@@ -1,4 +1,4 @@
-export enum TodoTypeProperty {
+export enum SchemaProperties {
   ARRAY = 'array',
   BOOLEAN = 'boolean',
   NUMBER = 'number',

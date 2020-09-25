@@ -9,9 +9,9 @@ import {
 import { morphism } from 'morphism';
 import { ITodo } from 'src/todo/models';
 
-import { TodoStatus } from '../../constants';
-import { ITodoType } from '../../interfaces';
-import { updateTodoSchema } from '../../morphism';
+import { TodoStatus } from '../constants';
+import { ITodoType } from '../interfaces';
+import { updateTodoSchema } from '../morphism';
 
 export class UpdateTodoDto {
   @IsString()

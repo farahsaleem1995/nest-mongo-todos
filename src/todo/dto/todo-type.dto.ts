@@ -1,7 +1,7 @@
 import { morphism } from 'morphism';
 
-import { TodoType } from '../../models';
-import { todoTypeSchema } from '../../morphism';
+import { TodoType } from '../models';
+import { todoTypeSchema } from '../morphism';
 
 export class TodoTypeDto {
   id: string;

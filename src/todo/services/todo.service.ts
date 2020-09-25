@@ -19,7 +19,7 @@ import {
   ITodoService,
   ITodoTypeRepository,
 } from '../interfaces';
-import { validateType } from '../utils';
+import { validateType } from '../../shared/utils';
 
 @Injectable()
 export class TodoService implements ITodoService {

@@ -3,8 +3,8 @@ import {
   QueryPageSize,
   SortDiraction,
   SortKey,
-} from '../../../shared/decorators';
-import { IBaseQuery } from '../../../shared/interfaces';
+} from '../../shared/decorators';
+import { IBaseQuery } from '../../shared/interfaces';
 
 export class GetTodoTypesQueryDto implements IBaseQuery {
   @SortKey(['name', 'createdAt', 'updatedAt'])

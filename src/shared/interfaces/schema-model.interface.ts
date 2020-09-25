@@ -1,4 +1,4 @@
-export interface ITodoTypeModel {
+export interface ISchemaModel {
   type: string;
 
   properties: any;
