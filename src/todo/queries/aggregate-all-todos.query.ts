@@ -1,4 +1,3 @@
-import { json } from 'express';
 import { IDbQuery, QueryTypes } from 'src/shared/interfaces';
 import { GetTodosQueryDto } from '../dto';
 
@@ -24,6 +23,9 @@ export const AggregateAllTodosQuery = (
           },
         },
         {
+          $unwind: '$type',
+        },
+        {
           $sort: JSON.parse(
             `{"${getTodosQueryDto.sortBy}":${
               getTodosQueryDto.isDescending ? -1 : 1
@@ -37,6 +39,21 @@ export const AggregateAllTodosQuery = (
         },
         {
           $limit: getTodosQueryDto.pageSize ? getTodosQueryDto.pageSize : 10,
+        },
+        {
+          $project: {
+            _id: 1,
+            title: 1,
+            description: 1,
+            status: 1,
+            type: {
+              _id: '$type._id',
+              name: '$type.name',
+            },
+            properties: 1,
+            createdAt: 1,
+            updatedAt: 1,
+          },
         },
       ],
     },

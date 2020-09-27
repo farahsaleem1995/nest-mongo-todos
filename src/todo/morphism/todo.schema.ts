@@ -10,9 +10,6 @@ export const todoSchema = createSchema<TodoDto, Todo>({
   description: 'description',
   type: (iteratee: Todo): { id: string; name: string } => {
     if (iteratee) {
-      if (Array.isArray(iteratee.type)) {
-        return { id: iteratee.type[0]._id, name: iteratee.type[0].name };
-      }
       return { id: iteratee.type._id, name: iteratee.type.name };
     }
   },
