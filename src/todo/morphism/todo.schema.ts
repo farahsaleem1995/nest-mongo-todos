@@ -4,13 +4,16 @@ import { TodoDto } from '../dto';
 import { Todo } from '../models';
 
 export const todoSchema = createSchema<TodoDto, Todo>({
-  id: 'id',
+  id: '_id',
   title: 'title',
   status: 'status',
   description: 'description',
   type: (iteratee: Todo): { id: string; name: string } => {
     if (iteratee) {
-      return { id: iteratee.type.id, name: iteratee.type.name };
+      if (Array.isArray(iteratee.type)) {
+        return { id: iteratee.type[0]._id, name: iteratee.type[0].name };
+      }
+      return { id: iteratee.type._id, name: iteratee.type.name };
     }
   },
   properties: 'properties',

@@ -4,10 +4,8 @@ import {
 } from '@nestjs/common';
 import {
   CreateQuery,
-  FilterQuery,
   Model,
   ModelPopulateOptions,
-  QueryPopulateOptions,
   UpdateQuery,
 } from 'mongoose';
 
@@ -18,44 +16,32 @@ import {
   IUpdateResult,
   IBaseRepoistory,
 } from '../interfaces';
+import {
+  IDbAggregateQuery,
+  IDbFindManyQuery,
+  IDbFindOneQuery,
+  IDbQuery,
+  QueryTypes,
+} from '../interfaces/db-query.interface';
 
 export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
   constructor(private readonly model: Model<M>) {}
 
-  findAll(options?: {
-    filter?: FilterQuery<M>;
-    query?: IBaseQuery;
-    references?: QueryPopulateOptions[];
-  }): Promise<M[]> {
-    const { filter, query, references } = options;
-    const mongoQuery: {
-      filter?: any;
-      sort: string;
-      skip: number;
-      limit: number;
-    } = this.initQuery(query);
-
-    mongoQuery.filter = filter ? this.excludeUndefinedProps(filter) : {};
-
-    const dbQuery = this.model
-      .find(mongoQuery.filter)
-      .sort(mongoQuery.sort)
-      .skip(mongoQuery.skip)
-      .limit(mongoQuery.limit);
-
-    if (references) {
-      references.forEach((reference: ModelPopulateOptions) => {
-        dbQuery.populate(reference);
-      });
+  findAll(options?: IDbQuery): Promise<any[]> {
+    if (!options) {
+      return this.model.find().exec();
     }
 
-    return dbQuery.exec();
+    if (options.queryType === QueryTypes.FIND) {
+      return this.handleFindQuery(options.query as IDbFindManyQuery);
+    } else {
+      return this.handleAggregateQueru(
+        (options.query as IDbAggregateQuery).pipeline,
+      );
+    }
   }
 
-  find(options: {
-    criteria: FilterQuery<M>;
-    references?: QueryPopulateOptions[];
-  }): Promise<M> {
+  find(options: IDbFindOneQuery): Promise<M> {
     const { criteria, references } = options;
     const dbQuery = this.model.findOne(criteria);
 
@@ -66,6 +52,10 @@ export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
     }
 
     return dbQuery.exec();
+  }
+
+  findById(id: string): Promise<M> {
+    return this.model.findById(id).exec();
   }
 
   async create(createQuery: CreateQuery<M>): Promise<M> {
@@ -143,5 +133,48 @@ export class BaseRepository<M extends BaseModel> implements IBaseRepoistory<M> {
 
       return accumulator;
     }, {});
+  }
+
+  private handleFindQuery(options?: IDbFindManyQuery): Promise<M[]> {
+    const { criteria, options: query, references } = options;
+    const mongoQuery: {
+      filter?: any;
+      sort: string;
+      skip: number;
+      limit: number;
+    } = this.initQuery(query);
+
+    mongoQuery.filter = criteria ? this.excludeUndefinedProps(criteria) : {};
+
+    const dbQuery = this.model
+      .find(mongoQuery.filter)
+      .sort(mongoQuery.sort)
+      .skip(mongoQuery.skip)
+      .limit(mongoQuery.limit);
+
+    if (references) {
+      references.forEach((reference: ModelPopulateOptions) => {
+        dbQuery.populate(reference);
+      });
+    }
+
+    return dbQuery.exec();
+  }
+
+  private handleAggregateQueru(pipeline: any[]): Promise<any[]> {
+    const modifiedPipeline: any[] = [];
+    pipeline.forEach((obj: any) => {
+      Object.entries(obj).forEach((entry: [string, any]): void => {
+        const [key, value] = entry;
+
+        if (key === '$match') {
+          const modifiedValue = this.excludeUndefinedProps(value);
+          obj[key] = modifiedValue;
+        }
+        modifiedPipeline.push(obj);
+      });
+    });
+
+    return this.model.aggregate(modifiedPipeline).exec();
   }
 }

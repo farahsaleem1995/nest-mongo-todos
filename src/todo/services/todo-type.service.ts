@@ -12,6 +12,7 @@ import {
   UpdateTodoTypeDto,
 } from '../dto';
 import { ITodoTypeRepository } from '../interfaces';
+import { findAllTodoTypesQuery } from '../queries';
 
 @Injectable()
 export class TodoTypeService {
@@ -22,21 +23,15 @@ export class TodoTypeService {
   async getAll(
     getTodoTypesQueryDto: GetTodoTypesQueryDto,
   ): Promise<TodoTypeDto[]> {
-    const { filter, query } = GetTodoTypesQueryDto.toModel(
-      getTodoTypesQueryDto,
+    const todoTypes = await this.todoTypeRepository.findAll(
+      findAllTodoTypesQuery(getTodoTypesQueryDto),
     );
-    const todoTypes = await this.todoTypeRepository.findAll({
-      filter,
-      query,
-    });
 
     return TodoTypeDto.fromModelArray(todoTypes);
   }
 
   async getById(id: string): Promise<TodoTypeDto> {
-    const todoType = await this.todoTypeRepository.find({
-      criteria: { _id: id },
-    });
+    const todoType = await this.todoTypeRepository.findById(id);
 
     if (!todoType) {
       throw new NotFoundException();

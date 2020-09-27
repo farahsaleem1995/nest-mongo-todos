@@ -19,7 +19,9 @@ import {
   ITodoService,
   ITodoTypeRepository,
 } from '../interfaces';
+import { findTodoByIdQuery } from '../queries';
 import { validateType } from '../../shared/utils';
+import { AggregateAllTodosQuery } from '../queries/aggregate-all-todos.query';
 
 @Injectable()
 export class TodoService implements ITodoService {
@@ -31,26 +33,15 @@ export class TodoService implements ITodoService {
   ) {}
 
   async getAll(getTodosQueryDto?: GetTodosQueryDto): Promise<TodoDto[]> {
-    const { filter, query } = GetTodosQueryDto.toModel(getTodosQueryDto);
-    const todos = await this.todoRepository.findAll({
-      filter,
-      query,
-      references: [
-        {
-          path: TodoReference.TYPE,
-          select: '_id name',
-        },
-      ],
-    });
+    const todos = await this.todoRepository.findAll(
+      AggregateAllTodosQuery(getTodosQueryDto),
+    );
 
     return TodoDto.fromModelArray(todos);
   }
 
   async getById(id: string): Promise<TodoDto> {
-    const todo = await this.todoRepository.find({
-      criteria: { _id: id },
-      references: [{ path: TodoReference.TYPE, select: '_id name' }],
-    });
+    const todo = await this.todoRepository.find(findTodoByIdQuery(id));
 
     if (!todo) {
       throw new NotFoundException();

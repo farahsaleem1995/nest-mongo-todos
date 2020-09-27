@@ -1,14 +1,13 @@
 import { IUpdateResult, IDeleteResult } from './';
 import { BaseModel } from '../models';
+import { IDbFindOneQuery, IDbQuery } from './db-query.interface';
 
 export interface IBaseRepoistory<M extends BaseModel> {
-  findAll(options?: {
-    filter?: any;
-    query?: any;
-    references?: any;
-  }): Promise<M[]>;
+  findAll(options?: IDbQuery): Promise<M[]>;
 
-  find(options: { criteria: any; references?: any }): Promise<M>;
+  find(options: IDbFindOneQuery): Promise<M>;
+
+  findById(id: string): Promise<M>;
 
   create(createQuery: any): Promise<M>;
 
